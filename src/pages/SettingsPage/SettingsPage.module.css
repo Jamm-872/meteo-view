@@ -1,0 +1,99 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.settingCard {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.labelGroup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.settingTitle {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.05rem;
+}
+
+.settingDescription {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.toggleGroup {
+  position: relative;
+  display: flex;
+  background: var(--glass-border);
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+}
+
+.toggleIndicator {
+  position: absolute;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  background: var(--accent);
+  border-radius: 0.5rem;
+  transition: transform 0.3s ease;
+  z-index: 0;
+}
+
+.toggleIndicatorRight {
+  transform: translateX(100%);
+}
+
+.toggleButton {
+  position: relative;
+  z-index: 1;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.25s ease;
+  cursor: pointer;
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.toggleButton:hover {
+  color: var(--text-primary);
+}
+
+.toggleButtonActive {
+  color: white;
+}
+
+.toggleButtonActive:hover {
+  color: white;
+}

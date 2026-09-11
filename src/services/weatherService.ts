@@ -17,14 +17,32 @@ const fetchJson = async (url: string) => {
   return data
 }
 
-export const searchCities = async (query: string) => {
+export const searchCities = async (query: string, language: 'es' | 'en' = 'es') => {
   const data = await fetchJson(
-    `${GEO_URL}/search?name=${encodeURIComponent(query)}&count=5&language=es&format=json`
+    `${GEO_URL}/search?name=${encodeURIComponent(query)}&count=5&language=${language}&format=json`
   )
   return data.results ?? []
 }
 
-export const getCurrentWeather = async (lat: number, lon: number) => {
+export const searchCityBilingual = async (query: string, lat: number, lon: number) => {
+  const [esResults, enResults] = await Promise.all([
+    fetchJson(`${GEO_URL}/search?name=${encodeURIComponent(query)}&count=5&language=es&format=json`),
+    fetchJson(`${GEO_URL}/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`),
+  ])
+
+  // Encontramos el resultado que coincide por coordenadas (mismo lugar, texto distinto)
+  const esMatch = esResults.results?.find((r: any) => r.latitude === lat && r.longitude === lon)
+  const enMatch = enResults.results?.find((r: any) => r.latitude === lat && r.longitude === lon)
+
+  return { esMatch, enMatch }
+}
+
+export const getCurrentWeather = async (
+  lat: number,
+  lon: number,
+  tempUnit: 'celsius' | 'fahrenheit' = 'celsius',
+  windUnit: 'kmh' | 'mph' = 'kmh'
+) => {
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lon),
@@ -38,15 +56,22 @@ export const getCurrentWeather = async (lat: number, lon: number) => {
       'weather_code',
     ].join(','),
     hourly: 'temperature_2m',
-    forecast_days: '1',
+    forecast_days: '2',
     timezone: 'auto',
+    temperature_unit: tempUnit,
+    wind_speed_unit: windUnit,
   })
 
   return fetchJson(`${FORECAST_URL}/forecast?${params}`)
 }
 
 
-export const getForecast = async (lat: number, lon: number) => {
+export const getForecast = async (
+  lat: number,
+  lon: number,
+  tempUnit: 'celsius' | 'fahrenheit' = 'celsius',
+  windUnit: 'kmh' | 'mph' = 'kmh'
+) => {
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lon),
@@ -60,19 +85,51 @@ export const getForecast = async (lat: number, lon: number) => {
     ].join(','),
     forecast_days: '7',
     timezone: 'auto',
+    temperature_unit: tempUnit,
+    wind_speed_unit: windUnit,
   })
 
-  const res = await fetch(`${FORECAST_URL}/forecast?${params}`)
-  return res.json()
+  return fetchJson(`${FORECAST_URL}/forecast?${params}`)
 }
 
-export const getCityWeather = async (lat: number, lon: number) => {
+export const getCityWeather = async (
+  lat: number,
+  lon: number,
+  tempUnit: 'celsius' | 'fahrenheit' = 'celsius'
+) => {
   const params = new URLSearchParams({
     latitude: String(lat),
     longitude: String(lon),
     current: 'temperature_2m,apparent_temperature,weather_code',
     timezone: 'auto',
+    temperature_unit: tempUnit,
   })
-  const res = await fetch(`${FORECAST_URL}/forecast?${params}`)
-  return res.json()
+
+  return fetchJson(`${FORECAST_URL}/forecast?${params}`)
+}
+
+export const getHistoricalWeather = async (
+  lat: number,
+  lon: number,
+  pastDays: number,
+  tempUnit: 'celsius' | 'fahrenheit' = 'celsius',
+  windUnit: 'kmh' | 'mph' = 'kmh'
+) => {
+  const params = new URLSearchParams({
+    latitude: String(lat),
+    longitude: String(lon),
+    hourly: [
+      'temperature_2m',
+      'relative_humidity_2m',
+      'wind_speed_10m',
+      'surface_pressure',
+    ].join(','),
+    past_days: String(pastDays),
+    forecast_days: '1',
+    timezone: 'auto',
+    temperature_unit: tempUnit,
+    wind_speed_unit: windUnit,
+  })
+
+  return fetchJson(`${FORECAST_URL}/forecast?${params}`)
 }

@@ -6,10 +6,12 @@ interface SettingsState {
   tempUnit: 'celsius' | 'fahrenheit'
   speedUnit: 'kmh' | 'mph'
   language: 'es' | 'en'
+  hasHydrated: boolean
   setTheme: (theme: 'light' | 'dark') => void
   setTempUnit: (unit: 'celsius' | 'fahrenheit') => void
   setSpeedUnit: (unit: 'kmh' | 'mph') => void
   setLanguage: (lang: 'es' | 'en') => void
+  setHasHydrated: (state: boolean) => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -19,11 +21,16 @@ export const useSettingsStore = create<SettingsState>()(
       tempUnit: 'celsius',
       speedUnit: 'kmh',
       language: 'es',
+      hasHydrated: false,
       setTheme: (theme) => set({ theme }),
       setTempUnit: (tempUnit) => set({ tempUnit }),
       setSpeedUnit: (speedUnit) => set({ speedUnit }),
       setLanguage: (language) => set({ language }),
+      setHasHydrated: (state) => set({ hasHydrated: state }),
     }),
-    { name: 'meteo-settings' }
+    { name: 'meteo-settings',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      }, }
   )
 )
